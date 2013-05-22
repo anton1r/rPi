@@ -22,31 +22,30 @@ int GSCALE = 2; // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g 
 // Writes a single byte (dataToWrite) into addressToWrite
 void writeRegister(char addressToWrite, char dataToWrite)
 {
-  //Wire.beginTransmission(MMA8452_ADDRESS);
-  //Wire.write(addressToWrite);
-  //Wire.write(dataToWrite);
-  //Wire.endTransmission(); //Stop transmitting
-
-  bcm2835_i2c_write(&addressToWrite, 1);
-  bcm2835_i2c_write(&dataToWrite, 1);
+	char buf[2] = {addressToWrite, dataToWrite};
+	bcm2835_i2c_write(buf, 2);
 
 }
 
 // Sets the MMA8452 to standby mode. It must be in standby to change most register settings
 void MMA8452Standby()
 {
-  char buf[1];
-  bcm2835_i2c_read_register_rs(&CTRL_REG1,buf,1);
-  printf("Returned first value %X\n",*buf);
-  writeRegister(CTRL_REG1, 0x01); //Clear the active bit to go into standby
+  char buf[2];
+  bcm2835_i2c_read_register_rs(&CTRL_REG1,buf,2);
+  writeRegister(CTRL_REG1, *buf ^ 0x01); //Clear the active bit to go into standby
 }
 
 // Sets the MMA8452 to active mode. Needs to be in this mode to output data
 void MMA8452Active()
 {
-  byte c = readRegister(CTRL_REG1);
-  char buf[1] = bcm2835_i2c_read_register_rs(&CTRL_REG1,buf,1);
-  writeRegister(CTRL_REG1, c | 0x01); //Set the active bit to begin detection
+  char buf[2];
+  bcm2835_i2c_read_register_rs(&CTRL_REG1,buf,2);
+
+  writeRegister(CTRL_REG1, 0x01); //Set the active bit to begin detection
+
+  char buff[2];
+  bcm2835_i2c_read_register_rs(&CTRL_REG1,buff,2);
+  printf("Returned active value %X\n",*buff);
 }
 
 /*
