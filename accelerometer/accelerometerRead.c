@@ -6,6 +6,7 @@
  */
 
 #include <bcm2835.h> // Used for I2C
+#include <time.h>
 #include <stdio.h>
 
 // The SparkFun breakout board defaults to 1, set to 0 if SA0 jumper on the bottom of the board is set
@@ -27,6 +28,19 @@ void writeRegister(char addressToWrite, char dataToWrite)
 
 }
 
+// Read bytesToRead sequentially, starting at addressToRead into the dest byte array
+void readRegisters(char addressToRead, int bytesToRead, byte * dest)
+{
+    //Set Address to read
+    char buf[1] = {addressToWrite};
+	bcm2835_i2c_write(buf, 1);
+
+    //Get reading
+    char dest[bytesToRead];
+    bcm2835_i2c_read_register_rs(&addressToRead,dest,bytesToRead);
+
+}
+
 // Sets the MMA8452 to standby mode. It must be in standby to change most register settings
 void MMA8452Standby()
 {
@@ -43,24 +57,34 @@ void MMA8452Active()
 
   writeRegister(CTRL_REG1, 0x01); //Set the active bit to begin detection
 
-  char buff[1];
-  bcm2835_i2c_read_register_rs(&CTRL_REG1,buff,1);
-
-  if (*buff == 0x01) // Active is 1
-  {
-    printf("MMA8452Q is Active \n");
-
-  }
-  else
-  {
-    printf("MMA8452Q Not Active \n");
-
-    while(1) ; // Loop forever if communication doesn't happen
-  }
-
+  char buff[2];
+  bcm2835_i2c_read_register_rs(&CTRL_REG1,buff,2);
+  printf("Returned active value %X\n",*buff);
 }
 
-/*
+void readAccelData(int *destination)
+{
+  char rawData[6];  // x/y/z accel register data stored here
+
+  readRegisters(OUT_X_MSB, 6, rawData);  // Read the six raw data registers into data array
+
+  // Loop to calculate 12-bit ADC and g value for each axis
+  for(int i = 0; i < 3 ; i++)
+  {
+    int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];  //Combine the two 8 bit registers into one 12-bit number
+    gCount >>= 4; //The registers are left align, here we right align the 12-bit integer
+
+    // If the number is negative, we have to make it so manually (no 12-bit data type)
+    if (rawData[i*2] > 0x7F)
+    {
+      gCount = ~gCount + 1;
+      gCount *= -1;  // Transform into negative 2's complement #
+    }
+
+    destination[i] = gCount; //Record this gCount into the 3 int array
+  }
+}
+
 void loop()
 {
   int accelCount[3];  // Stores the 12-bit signed value
@@ -81,32 +105,10 @@ void loop()
   }
   printf();
 
-  delay(10);  // Delay here for visibility
+  sleep(100);  // Delay here for visibility
 }
 
-void readAccelData(int *destination)
-{
-  byte rawData[6];  // x/y/z accel register data stored here
 
-  readRegisters(OUT_X_MSB, 6, rawData);  // Read the six raw data registers into data array
-
-  // Loop to calculate 12-bit ADC and g value for each axis
-  for(int i = 0; i < 3 ; i++)
-  {
-    int gCount = (rawData[i*2] << 8) | rawData[(i*2)+1];  //Combine the two 8 bit registers into one 12-bit number
-    gCount >>= 4; //The registers are left align, here we right align the 12-bit integer
-
-    // If the number is negative, we have to make it so manually (no 12-bit data type)
-    if (rawData[i*2] > 0x7F)
-    {
-      gCount = ~gCount + 1;
-      gCount *= -1;  // Transform into negative 2's complement #
-    }
-
-    destination[i] = gCount; //Record this gCount into the 3 int array
-  }
-}
-*/
 // Initialize the MMA8452 registers
 // See the many application notes for more info on setting all of these registers:
 // http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MMA8452Q
@@ -130,8 +132,8 @@ void initMMA8452()
 
   // Set up the full scale range to 2, 4, or 8g.
   char fsr = GSCALE;
-//  if(fsr > 8) fsr = 8; //Easy error check
- // fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4A, 10 = 8G
+  if(fsr > 8) fsr = 8; //Easy error check
+  fsr >>= 2; // Neat trick, see page 22. 00 = 2G, 01 = 4A, 10 = 8G
   writeRegister(XYZ_DATA_CFG, fsr);
 
   //The default data rate is 800Hz and we don't modify it in this example code
@@ -150,37 +152,7 @@ int main(int argc, char **argv)
   bcm2835_i2c_setSlaveAddress(MMA8452_ADDRESS);
 
   initMMA8452(); //Test and intialize the MMA8452
+
+  loop();
   return 0;
 }
-
-/*
-// Read bytesToRead sequentially, starting at addressToRead into the dest byte array
-void readRegisters(byte addressToRead, int bytesToRead, byte * dest)
-{
-  Wire.beginTransmission(MMA8452_ADDRESS);
-  Wire.write(addressToRead);
-  Wire.endTransmission(false); //endTransmission but keep the connection active
-
-  Wire.requestFrom(MMA8452_ADDRESS, bytesToRead); //Ask for bytes, once done, bus is released by default
-
-  while(Wire.available() < bytesToRead); //Hang out until we get the # of bytes we expect
-
-  for(int x = 0 ; x < bytesToRead ; x++)
-    dest[x] = Wire.read();
-}
-
-// Read a single byte from addressToRead and return it as a byte
-byte readRegister(byte addressToRead)
-{
-  Wire.beginTransmission(MMA8452_ADDRESS);
-  Wire.write(addressToRead);
-  Wire.endTransmission(false); //endTransmission but keep the connection active
-
-  Wire.requestFrom(MMA8452_ADDRESS, 1); //Ask for 1 byte, once done, bus is released by default
-
-  while(!Wire.available()) ; //Wait for the data to come back
-  return Wire.read(); //Return this one byte
-}
-*/
-
-
