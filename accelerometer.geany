@@ -25,7 +25,7 @@ long_line_column=72
 [files]
 current_page=1
 FILE_NAME_0=426;C;0;16;1;1;0;%2Fhome%2Fpi%2Fprojects%2FrPi%2Faccelerometer%2Fread.c;0;4
-FILE_NAME_1=3058;C;0;16;1;1;0;%2Fhome%2Fpi%2Fprojects%2FrPi%2Faccelerometer%2FaccelerometerRead.c;0;4
+FILE_NAME_1=2146;C;0;16;1;1;0;%2Fhome%2Fpi%2Fprojects%2FrPi%2Faccelerometer%2FaccelerometerRead.c;0;4
 
 [VTE]
 last_dir=/home/pi/projects/rPi
