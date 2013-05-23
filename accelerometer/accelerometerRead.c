@@ -20,9 +20,9 @@ char CTRL_REG1 = 0x2A;
 
 int GSCALE = 2; // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g values.
 
-void sleep()
+void sleep(int delay)
 {
-    double delay;
+    double slept;
 
     time_t start;
     time(&start);
@@ -30,9 +30,9 @@ void sleep()
       time_t now;
       time(&now);
 
-      delay = difftime(now, start);
+      slept = difftime(now, start);
 
-    }while(delay<1);
+    }while(slept<delay);
 }
 
 // Writes a single byte (dataToWrite) into addressToWrite
@@ -132,7 +132,7 @@ void loop()
   printf("\n");
 
 //Attempt a delay
-  sleep();
+  sleep(1);
 }
 
 
