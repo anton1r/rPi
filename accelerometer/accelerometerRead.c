@@ -43,9 +43,21 @@ void MMA8452Active()
 
   writeRegister(CTRL_REG1, 0x01); //Set the active bit to begin detection
 
-  char buff[2];
-  bcm2835_i2c_read_register_rs(&CTRL_REG1,buff,2);
-  printf("Returned active value %X\n",*buff);
+  char buff[1];
+  bcm2835_i2c_read_register_rs(&CTRL_REG1,buff,1);
+
+  if (*buff == 0x01) // Active is 1
+  {
+    printf("MMA8452Q is Active \n");
+
+  }
+  else
+  {
+    printf("MMA8452Q Not Active \n");
+
+    while(1) ; // Loop forever if communication doesn't happen
+  }
+
 }
 
 /*
