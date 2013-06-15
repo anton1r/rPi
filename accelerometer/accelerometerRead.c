@@ -20,12 +20,14 @@ char CTRL_REG1 = 0x2A;
 
 int GSCALE = 2; // Sets full-scale range to +/-2, 4, or 8g. Used to calc real g values.
 
+//Creates a delay of the required value
 void sleep(int delay)
 {
     double slept;
 
     time_t start;
     time(&start);
+
     do{
       time_t now;
       time(&now);
