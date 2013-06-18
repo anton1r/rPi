@@ -1,7 +1,7 @@
 [file_prefs]
 final_new_line=true
 ensure_convert_new_lines=false
-strip_trailing_spaces=true
+strip_trailing_spaces=false
 replace_tabs=false
 
 [indentation]
@@ -13,10 +13,8 @@ detect_indent_width=false
 indent_mode=2
 
 [project]
-name=accelerometer
-base_path=/home/pi/projects/rPi/accelerometer/
-description=
-file_patterns=
+name=metw
+base_path=/home/pi/projects/rPi/metw/
 
 [long line marker]
 long_line_behaviour=1
@@ -27,15 +25,3 @@ current_page=-1
 
 [VTE]
 last_dir=/home/pi/projects/rPi
-
-[build-menu]
-CFT_01_LB=_Build
-CFT_01_CM=gcc -Wall -o "%e" "%f" -l bcm2835
-CFT_01_WD=
-filetypes=C;
-CFT_00_LB=_Compile
-CFT_00_CM=gcc -Wall -c "%f" -l bcm2835
-CFT_00_WD=
-EX_00_LB=_Execute
-EX_00_CM=sudo "./%e"
-EX_00_WD=
