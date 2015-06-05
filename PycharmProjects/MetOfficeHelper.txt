@@ -7,8 +7,8 @@ API Key 6535f2b4-6420-4b2e-9e11-8aeeb5fcff50
 Get 5 day data
 http://datapoint.metoffice.gov.uk/public/data/val/wxfcs/all/xml/351017?res=3hourly&key=6535f2b4-6420-4b2e-9e11-8aeeb5fcff50
 
-Get text data for uk
-http://datapoint.metoffice.gov.uk/public/data/txt/wxfcs/regionalforecast/xml/515?key=6535f2b4-6420-4b2e-9e11-8aeeb5fcff50
+Get text data for lothians
+http://datapoint.metoffice.gov.uk/public/data/txt/wxfcs/regionalforecast/xml/505?key=6535f2b4-6420-4b2e-9e11-8aeeb5fcff50
 
 Get site list for text data
 http://datapoint.metoffice.gov.uk/public/data/txt/wxfcs/regionalforecast/xml/sitelist?key=6535f2b4-6420-4b2e-9e11-8aeeb5fcff50
