@@ -1,3 +1,7 @@
+#To Install on Jasper you must install
+#lxml via pip but its dependecnes xml2-dev and xslt-dev via apt-get first
+
+
 from lxml import html
 import requests
 import re
