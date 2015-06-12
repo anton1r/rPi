@@ -3,19 +3,20 @@ import re
 
 WORDS = ["News"]
 
-PRIORITY = 1
+PRIORITY = 3
 
 def handle(text, mic, profile):
     newsToRead = getNews()
-    mic.say(newsToRead.extend)
+    
+    for x in newsToRead:
+        mic.say(x)
 
 def getNews() :
     d = feedparser.parse("http://feeds.bbci.co.uk/news/rss.xml?edition=uk")
 
     newsToRead = []
-    count = len(d['entries'])
     for x in range(0, 5):
-         newsToRead.append(d['entries'][x]['title']['summary'])
+         newsToRead.append(d['entries'][x]['title'])
 
     return newsToRead
 
